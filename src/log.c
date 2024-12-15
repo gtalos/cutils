@@ -1,12 +1,7 @@
-/**
- * @file log.c
- * @author gtalocchino
- * @brief 
- * @version 0.1
- * @date 2024-07-03
- * 
- * @copyright Copyright (c) 2024
- * 
+/*
+ * Copyright (c) 2024 gtalos
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include "log.h"
@@ -29,6 +24,7 @@ void logg(enum log_level level, const char *fmt, ...)
 {
     char *tag = NULL;
 
+    /* Determine the tag based on the log level */
     switch (level) {
     case info:
         tag = "[INFO]: ";
