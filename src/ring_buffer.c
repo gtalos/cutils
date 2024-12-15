@@ -1,5 +1,3 @@
-/* ring_buffer.c: Simple ring buffer API */
-
 /*
  * Copyright (c) 2015 Intel Corporation
  *

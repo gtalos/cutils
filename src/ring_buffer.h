@@ -11,7 +11,6 @@
 #include <stdbool.h>
 #include <assert.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,16 +21,6 @@ extern "C" {
  */
 #define RING_BUFFER_MAX_SIZE 0x80000000u
 /** @endcond */
-
-/**
- * @file
- * @defgroup ring_buffer_apis Ring Buffer APIs
- * @ingroup datastructure_apis
- *
- * @brief Simple ring buffer implementation.
- *
- * @{
- */
 
 /**
  * @brief A structure to represent a ring buffer
@@ -351,10 +340,6 @@ int32_t ring_buf_item_put(struct ring_buf *rb, uint16_t type, uint8_t value,
  */
 int32_t ring_buf_item_get(struct ring_buf *rb, uint16_t *type, uint8_t *value,
                           uint32_t *data, uint8_t *size32);
-
-/**
- * @}
- */
 
 #ifdef __cplusplus
 }
