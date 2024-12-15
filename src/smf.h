@@ -4,27 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/**
- * @file
- *
- * @brief State Machine Framework header file
- */
-
 #ifndef SMF_H
 #define SMF_H
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "smf_config.h"
-
-/**
- * @brief State Machine Framework API
- * @defgroup smf State Machine Framework API
- * @version 0.1.0
- * @ingroup os_services
- * @{
- */
+#include "smf_port.h"
 
 /**
  * @brief Macro to create a hierarchical state with initial transitions.
@@ -176,9 +162,5 @@ int32_t smf_run_state(struct smf_ctx *ctx);
 #ifdef __cplusplus
 }
 #endif
-
-/**
- * @}
- */
 
 #endif /* SMF_H */
