@@ -15,13 +15,21 @@
 extern "C" {
 #endif
 
-void bit_cpy(void *dst, size_t dst_offset, const void* src, size_t src_offset, size_t bit_len);
+void bit_copy(void *dst, size_t dst_offset, const void* src, size_t src_offset, size_t bit_len);
 
-uint32_t bit_reverse_u32(uint32_t value);
+uint16_t bit_toggle_endian_u16(uint16_t value);
+
+uint32_t bit_toggle_endian_u32(uint32_t value);
+
+uint64_t bit_toggle_endian_u64(uint64_t value);
 
 uint16_t bit_reverse_u16(uint16_t value);
 
-bool is_little_endian(void);
+uint32_t bit_reverse_u32(uint32_t value);
+
+uint64_t bit_reverse_u64(uint64_t value);
+
+bool bit_is_little_endian(void);
 
 #ifdef __cplusplus
 }
