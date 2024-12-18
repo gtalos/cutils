@@ -38,6 +38,7 @@ uint16_t bit_toggle_endian_u16(uint16_t value)
 {   
     return ((value & 0x00ff) << 8) |
            ((value & 0xff00) >> 8);
+}
 
 uint32_t bit_toggle_endian_u32(uint32_t value)
 {
