@@ -31,7 +31,7 @@ void bit_copy(void *dst, size_t dst_offset, const void* src, size_t src_offset, 
             /* The src bit was off, turn off the corresponding destination bit. */
             d[dst_byte] &= ~(1u << (7u - dst_bit));
         }
-	}
+    }
 }
 
 uint16_t bit_toggle_endian_u16(uint16_t value)
