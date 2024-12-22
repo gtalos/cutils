@@ -54,7 +54,7 @@ void crc_modbus_update(struct crc_modbus_ctx *ctx, const void *data, size_t len)
     }
 }
 
-uint32_t crc_modbus_finish(struct crc_modbus_ctx *ctx)
+uint32_t crc_modbus_final(struct crc_modbus_ctx *ctx)
 {
     return ctx->state;
 }
