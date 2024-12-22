@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 gtalos
+ * Copyright (c) 2024 The cutils authors
  *
  * SPDX-License-Identifier: Apache-2.0
  */
