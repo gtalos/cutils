@@ -103,5 +103,19 @@ bool bit_is_little_endian(void)
     uint32_t test_value = 0x1;
     uint8_t *byte_ptr = (uint8_t *) &test_value;
 
-    return *byte_ptr == 0x1;
+    return byte_ptr[0] == 0x01 && 
+           byte_ptr[1] == 0x00 && 
+           byte_ptr[2] == 0x00 && 
+           byte_ptr[3] == 0x00;
+}
+
+bool bit_is_big_endian(void)
+{
+    uint32_t test_value = 0x1;
+    uint8_t *byte_ptr = (uint8_t *) &test_value;
+
+    return byte_ptr[0] == 0x00 && 
+           byte_ptr[1] == 0x00 && 
+           byte_ptr[2] == 0x00 && 
+           byte_ptr[3] == 0x01;
 }

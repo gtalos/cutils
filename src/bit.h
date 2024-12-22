@@ -102,6 +102,16 @@ uint64_t bit_reverse_u64(uint64_t value);
  */
 bool bit_is_little_endian(void);
 
+/**
+ * @brief Checks if the system is big-endian.
+ * 
+ * This function tests the byte order of the system by checking how a 32-bit value 
+ * is stored in memory.
+ *
+ * @return `true` if the system is big-endian, `false` if it is little-endian.
+ */
+bool bit_is_big_endian(void);
+
 #ifdef __cplusplus
 }
 #endif
