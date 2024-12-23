@@ -116,4 +116,4 @@ bool bit_is_big_endian(void);
 }
 #endif
 
-#endif 
+#endif
