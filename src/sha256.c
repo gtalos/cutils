@@ -13,31 +13,31 @@
 static uint32_t reverse_u32(uint32_t value);
 static void write_u32_be(uint32_t value, void *data, size_t offset);
 static uint32_t read_u32_be(const void *data, size_t offset);
-static size_t internal_process_many(sha256_ctx_t *ctx, const uint8_t *data, size_t len);
-static void internal_process(sha256_ctx_t *ctx, const void *data);
+static size_t internal_process_many(struct sha256_ctx *ctx, const uint8_t *data, size_t len);
+static void internal_process(struct sha256_ctx *ctx, const void *data);
 
 
 static const uint32_t K[] = {
-        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-        0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-        0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-        0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
-        0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-        0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
-        0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
-        0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-        0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+    0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+    0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+    0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+    0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
 
-void sha256_init(sha256_ctx_t *ctx)
+void sha256_init(struct sha256_ctx *ctx)
 {
     ctx->total[0] = 0;
     ctx->total[1] = 0;
@@ -54,7 +54,7 @@ void sha256_init(sha256_ctx_t *ctx)
     memset(ctx->buffer, 0, sizeof(ctx->buffer));
 }
 
-void sha256_update(sha256_ctx_t *ctx, const void *input, size_t len)
+void sha256_update(struct sha256_ctx *ctx, const void *input, size_t len)
 {
     if (len == 0) {
         return;
@@ -93,7 +93,7 @@ void sha256_update(sha256_ctx_t *ctx, const void *input, size_t len)
     }
 }
 
-void sha256_finish(sha256_ctx_t *ctx, void *output)
+void sha256_final(struct sha256_ctx *ctx, void *output)
 {
     /* Add padding: 0x80 then 0x00 until 8 bytes remain for the length */
     uint32_t used = ctx->total[0] & 0x3f;
@@ -142,18 +142,30 @@ static uint32_t reverse_u32(uint32_t value)
 
 static void write_u32_be(uint32_t value, void *data, size_t offset)
 {
-    uint32_t swapped = reverse_u32(value);
-    memcpy((uint8_t *) data + offset, &swapped, sizeof(swapped));
+    uint32_t to_write;
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    to_write = value;
+    (void) reverse_u32;
+#else
+    to_write = reverse_u32(value);
+#endif
+    memcpy((uint8_t *) data + offset, &to_write, sizeof(to_write));
 }
 
 static uint32_t read_u32_be(const void *data, size_t offset)
 {
     uint32_t n;
     memcpy(&n, (uint8_t *) data + offset, sizeof(n));
+
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    (void) reverse_u32;
+    return n;
+#else
     return reverse_u32(n);
+#endif
 }
 
-static size_t internal_process_many(sha256_ctx_t *ctx, const uint8_t *data, size_t len)
+static size_t internal_process_many(struct sha256_ctx *ctx, const uint8_t *data, size_t len)
 {
     size_t processed = 0;
 
@@ -168,7 +180,7 @@ static size_t internal_process_many(sha256_ctx_t *ctx, const uint8_t *data, size
     return processed;
 }
 
-static void internal_process(sha256_ctx_t *ctx, const void *data)
+static void internal_process(struct sha256_ctx *ctx, const void *data)
 {
     struct {
         uint32_t temp1; 
@@ -191,8 +203,8 @@ static void internal_process(sha256_ctx_t *ctx, const void *data)
 
 #define R(t)                                                            \
         (                                                               \
-             local.W[t] = S1(local.W[(t) -  2]) + local.W[(t) -  7] +   \
-             S0(local.W[(t) - 15]) + local.W[(t) - 16]                  \
+            local.W[t] = S1(local.W[(t) -  2]) + local.W[(t) -  7] +    \
+            S0(local.W[(t) - 15]) + local.W[(t) - 16]                   \
         )
 
 #define P(a, b, c, d, e, f, g, h, x, K)                                 \
