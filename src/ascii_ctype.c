@@ -26,7 +26,7 @@
 #define Z              CNTRL | SPACE
 
 
-const unsigned char char_table[256] = {
+static const unsigned char char_table[256] = {
     X, X, X, X, X, X, X, X, X, Z, Z, X, X, Z, X, X,	 /*   0.. 15 */
     X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,	 /*  16.. 31 */
     S, P, P, P, R, P, P, P, R, R, G, R, P, P, R, P,	 /*  32.. 47 */
@@ -38,7 +38,7 @@ const unsigned char char_table[256] = {
 	/* Nothing in the 128.. range */
 };
 
-const unsigned char hex_table[256] = {
+static const unsigned char hex_table[256] = {
     [0x30] = 1, [0x31] = 1,
     [0x32] = 1, [0x33] = 1,
     [0x34] = 1, [0x35] = 1,
@@ -98,16 +98,6 @@ int is_upper(int c)
     return is_case(c, 0);
 }
 
-int to_lower(int c)
-{
-    return case_transform((unsigned char) c, 0x20);
-}
-
-int to_upper(int c)
-{
-    return case_transform((unsigned char) c, 0);
-}
-
 int is_cntrl(int c)
 {
     return is_test(c, CNTRL);
@@ -125,7 +115,7 @@ int is_xdigit(int c)
 
 int is_glob_special(int c)
 {
-    return is_test(c, GLOB_SPECIAL);   
+    return is_test(c, GLOB_SPECIAL);
 }
 
 int is_regex_special(int c)
@@ -135,7 +125,17 @@ int is_regex_special(int c)
 
 int is_pathspec_magic(int c)
 {
-    return is_test(c, PATHSPEC_MAGIC); 
+    return is_test(c, PATHSPEC_MAGIC);
+}
+
+int to_lower(int c)
+{
+    return case_transform((unsigned char) c, 0x20);
+}
+
+int to_upper(int c)
+{
+    return case_transform((unsigned char) c, 0);
 }
 
 static inline int is_test(int c, int mask)
