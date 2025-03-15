@@ -127,7 +127,6 @@ static uint32_t read_u32_be(const void *data, size_t offset)
 {
     uint32_t n;
     memcpy(&n, (uint8_t *) data + offset, sizeof(n));
-
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     (void) reverse_u32;
     return n;
