@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 The cutils authors
+ * Copyright (c) 2024
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -74,7 +74,7 @@ static const uint32_t lut_ieee_802_3[256] = {
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-static const uint32_t lut_modbus[] = {
+static const uint16_t lut_modbus[] = {
     0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0,
     0x0280, 0xc241, 0xc601, 0x06c0, 0x0780, 0xc741,
     0x0500, 0xc5c1, 0xc481, 0x0440, 0xcc01, 0x0cc0,

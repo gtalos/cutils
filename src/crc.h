@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 The cutils authors
+ * Copyright (c) 2024
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -106,4 +106,4 @@ uint32_t crc_modbus_final(struct crc_modbus_ctx *ctx);
 }
 #endif
 
-#endif  /* CRC_H */
+#endif /* CRC_H */
