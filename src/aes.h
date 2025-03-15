@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 The cutils authors
+ * Copyright (c) 2024 The Mbed TLS Contributors
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -38,7 +38,7 @@ void aes_init(struct aes_ctx *ctx);
  *                16, 20 and 32 bytes.
  * @return enum aes_status_t Status of the key configuration operation.
  */
-int32_t aes_enc_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len);
+int32_t aes_enc_set_key(struct aes_ctx *ctx, const void *key, uint32_t key_len);
 
 /**
  * @brief This function sets the decryption key.
@@ -50,7 +50,7 @@ int32_t aes_enc_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len);
  *                16, 20 and 32 bytes.
  * @return enum aes_status_t Status of the key configuration operation.
  */
-int32_t aes_dec_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len);
+int32_t aes_dec_set_key(struct aes_ctx *ctx, const void *key, uint32_t key_len);
 
 /**
  * @brief This function performs an AES-CBC encryption operation on 

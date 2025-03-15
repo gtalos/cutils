@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 The cutils authors
+ * Copyright (c) 2024
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -327,17 +327,17 @@ static const uint32_t RCON[] = {
 };
 
 
+static void xor(uint8_t *r, const uint8_t *a, const uint8_t *b, size_t n);
 static uint32_t reverse_u32(uint32_t value);
 static uint32_t read_u32_le(const void *data, size_t offset);
 static void write_u32_le(uint32_t value, void *data, size_t offset);
+static int32_t set_key_enc(struct aes_ctx *ctx, const void *key, uint32_t key_bits);
 static void internal_encrypt(struct aes_ctx *ctx, const void *input, void *output);
 static void internal_decrypt(struct aes_ctx *ctx, const void *input, void *output);
-static int32_t crypt_ecb(struct aes_ctx *ctx, enum aes_mode_t mode, 
-                        const void *input, void *output);
-static int32_t crypt_cbc(struct aes_ctx *ctx, enum aes_mode_t mode, size_t length, 
+static int32_t crypt_ecb(struct aes_ctx *ctx, enum aes_mode_t mode,
+                         const void *input, void *output);
+static int32_t crypt_cbc(struct aes_ctx *ctx, enum aes_mode_t mode, size_t length,
                          void *iv, const void *input, void *output);
-static int32_t setkey_enc(struct aes_ctx *ctx, const void *key, uint32_t key_bits);
-static void xor(uint8_t *r, const uint8_t *a, const uint8_t *b, size_t n);
 
 
 void aes_init(struct aes_ctx *ctx)
@@ -348,12 +348,12 @@ void aes_init(struct aes_ctx *ctx)
     memset(ctx->buf, 0, sizeof(ctx->buf));
 }
 
-int32_t aes_enc_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len)
+int32_t aes_enc_set_key(struct aes_ctx *ctx, const void *key, uint32_t key_len)
 {
-    return setkey_enc(ctx, key, key_len * 8);
+    return set_key_enc(ctx, key, key_len * 8);
 }
 
-int32_t aes_dec_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len)
+int32_t aes_dec_set_key(struct aes_ctx *ctx, const void *key, uint32_t key_len)
 {
     const uint32_t key_bits = key_len * 8;
     struct aes_ctx cty = {0};
@@ -362,7 +362,7 @@ int32_t aes_dec_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len)
     uint32_t *RK = ctx->buf + ctx->rk_offset;
 
     /* Also checks key_bits */
-    if ((setkey_enc(&cty, key, key_bits)) != 0) {
+    if ((set_key_enc(&cty, key, key_bits)) != 0) {
         return -1;
     }
 
@@ -392,16 +392,23 @@ int32_t aes_dec_setkey(struct aes_ctx *ctx, const void *key, uint32_t key_len)
     return 0;
 }
 
-int32_t aes_enc_cbc(struct aes_ctx *ctx, void *iv, const void *pt, 
+int32_t aes_enc_cbc(struct aes_ctx *ctx, void *iv, const void *pt,
                     size_t pt_len, void *ct)
 {
     return crypt_cbc(ctx, aes_encrypt, pt_len, iv, pt, ct);
 }
 
-int32_t aes_dec_cbc(struct aes_ctx *ctx, void *iv, const void *ct, 
+int32_t aes_dec_cbc(struct aes_ctx *ctx, void *iv, const void *ct,
                     size_t ct_len, void *pt)
 {
     return crypt_cbc(ctx, aes_decrypt, ct_len, iv, ct, pt);
+}
+
+static void xor(uint8_t *r, const uint8_t *a, const uint8_t *b, size_t n)
+{
+    for (size_t i = 0; i < n; i++) {
+        r[i] = a[i] ^ b[i];
+    }
 }
 
 static uint32_t reverse_u32(uint32_t value)
@@ -410,6 +417,18 @@ static uint32_t reverse_u32(uint32_t value)
            ((value & 0x0000ff00) <<  8) | 
            ((value & 0x00ff0000) >>  8) | 
            ((value & 0xff000000) >> 24);
+}
+
+static uint32_t read_u32_le(const void *data, size_t offset)
+{
+    uint32_t n;
+    memcpy(&n, (uint8_t *) data + offset, sizeof(n));
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    (void) reverse_u32;
+    return n;
+#else
+    return reverse_u32(n);
+#endif  
 }
 
 static void write_u32_le(uint32_t value, void *data, size_t offset)
@@ -424,60 +443,7 @@ static void write_u32_le(uint32_t value, void *data, size_t offset)
     memcpy((uint8_t *) data + offset, &to_write, sizeof(to_write));
 }
 
-static uint32_t read_u32_le(const void *data, size_t offset)
-{
-    uint32_t n;
-    memcpy(&n, (uint8_t *) data + offset, sizeof(n));
-
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    return n;
-#else
-    return reverse_u32(n);
-#endif  
-}
-
-int32_t crypt_cbc(struct aes_ctx *ctx, enum aes_mode_t mode, size_t length, 
-                  void *iv, const void *input, void *output)
-{
-    if (mode != aes_encrypt && mode != aes_decrypt) {
-        return -1;
-    }
-
-    if (length % 16) {
-        return -1;
-    }
-
-    const uint8_t *in = input;
-    uint8_t *out = output;
-
-    if (mode == aes_decrypt) {
-        while (length > 0) {
-            uint8_t temp[16];
-            memcpy(temp, in, 16);
-            crypt_ecb(ctx, mode, in, out);
-            xor(out, out, iv, 16);
-            memcpy(iv, temp, 16);
-
-            in += 16;
-            out += 16;
-            length -= 16;
-        }
-    } else {
-        while (length > 0) {
-            xor(out, in, iv, 16);
-            crypt_ecb(ctx, mode, out, out);
-            memcpy(iv, out, 16);
-
-            in += 16;
-            out += 16;
-            length -= 16;
-        }
-    }
-
-    return 0;
-}
-
-static int32_t setkey_enc(struct aes_ctx *ctx, const void *key, uint32_t key_bits)
+static int32_t set_key_enc(struct aes_ctx *ctx, const void *key, uint32_t key_bits)
 {
     switch (key_bits) {
         case 128: 
@@ -554,22 +520,6 @@ static int32_t setkey_enc(struct aes_ctx *ctx, const void *key, uint32_t key_bit
                 RK[15] = RK[7] ^ RK[14];
             }
             break;
-    }
-
-    return 0;
-}
-
-static int32_t crypt_ecb(struct aes_ctx *ctx, enum aes_mode_t mode, 
-                         const void *input, void *output)
-{
-    if (mode != aes_encrypt && mode != aes_decrypt) {
-        return -1;
-    }
-
-    if (mode == aes_encrypt) {
-        internal_encrypt(ctx, input, output);
-    } else {
-        internal_decrypt(ctx, input, output);
     }
 
     return 0;
@@ -678,9 +628,59 @@ static void internal_decrypt(struct aes_ctx *ctx, const void *input, void *outpu
     write_u32_le(t.X[3], output, 12);
 }
 
-static void xor(uint8_t *r, const uint8_t *a, const uint8_t *b, size_t n)
+static int32_t crypt_ecb(struct aes_ctx *ctx, enum aes_mode_t mode,
+                         const void *input, void *output)
 {
-    for (size_t i = 0; i < n; i++) {
-        r[i] = a[i] ^ b[i];
+    if (mode != aes_encrypt && mode != aes_decrypt) {
+        return -1;
     }
+
+    if (mode == aes_encrypt) {
+        internal_encrypt(ctx, input, output);
+    } else {
+        internal_decrypt(ctx, input, output);
+    }
+
+    return 0;
+}
+
+static int32_t crypt_cbc(struct aes_ctx *ctx, enum aes_mode_t mode, size_t length, 
+                         void *iv, const void *input, void *output)
+{
+    if (mode != aes_encrypt && mode != aes_decrypt) {
+        return -1;
+    }
+
+    if (length % 16) {
+        return -1;
+    }
+
+    const uint8_t *in = input;
+    uint8_t *out = output;
+
+    if (mode == aes_decrypt) {
+        while (length > 0) {
+            uint8_t temp[16];
+            memcpy(temp, in, 16);
+            crypt_ecb(ctx, mode, in, out);
+            xor(out, out, iv, 16);
+            memcpy(iv, temp, 16);
+
+            in += 16;
+            out += 16;
+            length -= 16;
+        }
+    } else {
+        while (length > 0) {
+            xor(out, in, iv, 16);
+            crypt_ecb(ctx, mode, out, out);
+            memcpy(iv, out, 16);
+
+            in += 16;
+            out += 16;
+            length -= 16;
+        }
+    }
+
+    return 0;
 }
