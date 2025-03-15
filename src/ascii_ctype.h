@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 The cutils authors
+ * Copyright (c) 2024
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -61,6 +61,13 @@ int is_print(int c);
 int is_lower(int c);
 
 /**
+ * @brief Checks if a character is uppercase.
+ * @param c The character to check.
+ * @return Non-zero if the character is uppercase, 0 otherwise.
+ */
+int is_upper(int c);
+
+/**
  * @brief Checks if a character is a control character.
  * @param c The character to check.
  * @return Non-zero if the character is a control character, 0 otherwise.
@@ -80,13 +87,6 @@ int is_punct(int c);
  * @return Non-zero if the character is a hexadecimal digit, 0 otherwise.
  */
 int is_xdigit(int c);
-
-/**
- * @brief Checks if a character is uppercase.
- * @param c The character to check.
- * @return Non-zero if the character is uppercase, 0 otherwise.
- */
-int is_upper(int c);
 
 /**
  * @brief Checks if a character is a glob special character.

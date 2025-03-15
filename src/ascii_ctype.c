@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 The cutils authors
+ * Copyright (c) 2024
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -27,14 +27,14 @@
 
 
 static const unsigned char char_table[256] = {
-    X, X, X, X, X, X, X, X, X, Z, Z, X, X, Z, X, X,	 /*   0.. 15 */
-    X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,	 /*  16.. 31 */
-    S, P, P, P, R, P, P, P, R, R, G, R, P, P, R, P,	 /*  32.. 47 */
-    D, D, D, D, D, D, D, D, D, D, P, P, P, P, P, G,	 /*  48.. 63 */
-    P, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A,	 /*  64.. 79 */
-    A, A, A, A, A, A, A, A, A, A, A, G, G, U, R, P,	 /*  80.. 95 */
-    P, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A,	 /*  96..111 */
-    A, A, A, A, A, A, A, A, A, A, A, R, R, U, P, X,	 /* 112..127 */
+    X, X, X, X, X, X, X, X, X, Z, Z, X, X, Z, X, X,	/*   0.. 15 */
+    X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,	/*  16.. 31 */
+    S, P, P, P, R, P, P, P, R, R, G, R, P, P, R, P,	/*  32.. 47 */
+    D, D, D, D, D, D, D, D, D, D, P, P, P, P, P, G,	/*  48.. 63 */
+    P, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A,	/*  64.. 79 */
+    A, A, A, A, A, A, A, A, A, A, A, G, G, U, R, P,	/*  80.. 95 */
+    P, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A,	/*  96..111 */
+    A, A, A, A, A, A, A, A, A, A, A, R, R, U, P, X,	/* 112..127 */
 	/* Nothing in the 128.. range */
 };
 
