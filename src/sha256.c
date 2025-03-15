@@ -13,8 +13,8 @@
 static uint32_t reverse_u32(uint32_t value);
 static void write_u32_be(uint32_t value, void *data, size_t offset);
 static uint32_t read_u32_be(const void *data, size_t offset);
-static size_t internal_process_many(struct sha256_ctx *ctx, const uint8_t *data, size_t len);
 static void internal_process(struct sha256_ctx *ctx, const void *data);
+static size_t internal_process_many(struct sha256_ctx *ctx, const uint8_t *data, size_t len);
 
 
 static const uint32_t K[] = {
@@ -156,28 +156,12 @@ static uint32_t read_u32_be(const void *data, size_t offset)
 {
     uint32_t n;
     memcpy(&n, (uint8_t *) data + offset, sizeof(n));
-
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     (void) reverse_u32;
     return n;
 #else
     return reverse_u32(n);
 #endif
-}
-
-static size_t internal_process_many(struct sha256_ctx *ctx, const uint8_t *data, size_t len)
-{
-    size_t processed = 0;
-
-    while (len >= 64) {
-        internal_process(ctx, data);
-
-        data += 64;
-        len -= 64;
-        processed += 64;
-    }
-
-    return processed;
 }
 
 static void internal_process(struct sha256_ctx *ctx, const void *data)
@@ -242,4 +226,19 @@ static void internal_process(struct sha256_ctx *ctx, const void *data)
     for (size_t i = 0; i < 8; i++) {
         ctx->state[i] += local.A[i];
     }
+}
+
+static size_t internal_process_many(struct sha256_ctx *ctx, const uint8_t *data, size_t len)
+{
+    size_t processed = 0;
+
+    while (len >= 64) {
+        internal_process(ctx, data);
+
+        data += 64;
+        len -= 64;
+        processed += 64;
+    }
+
+    return processed;
 }
