@@ -56,6 +56,10 @@ void hex_from_bytes(const void *bin, size_t bin_len, bool upper, char *hex)
         hex[2 * i] = hex_chars[(in[i] >> 4) & 0x0f];
         hex[2 * i + 1] = hex_chars[in[i] & 0x0f];
     }
+
+    if (bin_len > 0) {
+        hex[2 * bin_len] = 0;
+    }
 }
 
 int32_t hex_to_bytes(const char *hex, size_t len, void *bin)
