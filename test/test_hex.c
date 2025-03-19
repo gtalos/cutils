@@ -158,11 +158,12 @@ void test_bytes_to_hex_valid_8_bytes(void)
     uint8_t bin[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
     
     char hex[32];
+    memset(hex, 0xff, sizeof(hex));
     char *expected = "0123456789abcdef";
 
     hex_from_bytes(bin, sizeof(bin), false, hex);
    
-    TEST_ASSERT_EQUAL_MEMORY(expected, hex, strlen(expected));
+    TEST_ASSERT_EQUAL_MEMORY(expected, hex, strlen(expected) + 1);
 }
 
 /**
@@ -188,5 +189,5 @@ void test_bytes_to_hex_empty_binary(void)
 
     hex_from_bytes(bin, 0, false, hex);
    
-    TEST_ASSERT_EQUAL_MEMORY(expected, hex, strlen(expected));
+    TEST_ASSERT_EQUAL_MEMORY(expected, hex, sizeof(hex));
 }
